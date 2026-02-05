@@ -7,7 +7,7 @@ ESCAPE = '\\#[HEXCHAR]#[HEXCHAR]'
 IDENTIFIER_START = '(?:[_A-Za-z\x80-\xFF]|#[ESCAPE])'
 IDENTIFIER_CHAR = '#[IDENTIFIER_START]|\d'
 IDENTIFIER = '#[IDENTIFIER_START](?:#[IDENTIFIER_CHAR])*'
-SYMBOL = '#[IDENTIFIER_START](?:\.?(?:#[IDENTIFIER_CHAR]))*'
+SYMBOL = '#[IDENTIFIER_START](?:#[IDENTIFIER_CHAR]|\.)*'
 SYMBOL_DEF = ':#[SYMBOL]'
 FLOATING_POINT_PART = '(?:(?:\.\d+)?(E-?\d+)?)'
 NUMBER = '[+-]\d+(?:#[FLOATING_POINT_PART]|u)?'
@@ -23,7 +23,7 @@ node: node-prefix (atom | compound-node);
 node-prefix: line-info? comment?;
 
 atom:
-    `.`{keyword.other}
+    `.`{constant.language}
   | SYMBOL
   | SYMBOL_DEF{entity.name.variable}
   | number
@@ -39,21 +39,23 @@ compound-node{meta.group}:
 
 filename: ','{punctuation.separator.comma}
 (~ESCAPE)*
-~'(?=#[ILLEGAL_CHARS])'
+~'(?=#[ILLEGAL_CHARS]|\s)'
 ;
 
 line-info:
-  '(~)?(\d+),(~)?(\d+)'{
+  '(~)?(\d+)(,)(~)?(\d+)'{
     1: keyword.operator,
     2: constant.numeric,
-    3: keyword.operator,
-    4: constant.numeric,
-    5: keyword.operator,
-    6: constant.numeric
+    3: punctuation.separator.comma,
+    4: keyword.operator,
+    5: constant.numeric,
+    6: keyword.operator,
+    7: constant.numeric
   } filename?
-  | ',?(~)?(\d+)'{
-    1: keyword.operator,
-    2: constant.numeric
+  | '(,)?(~)?(\d+)'{
+    1: punctuation.separator.comma,
+    2: keyword.operator,
+    3: constant.numeric
   }
 ;
 

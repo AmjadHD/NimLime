@@ -30,7 +30,7 @@ contexts:
   # Rule: compound-node
   compound-node|0:
     - meta_content_scope: meta.group.nif
-    - match: '(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:\.?(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d))*)'
+    - match: '(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d|\.)*)'
       scope: variable.function.nif
       push: compound-node|1
       pop: true
@@ -44,27 +44,29 @@ contexts:
   # Rule: compound-node
   compound-node|1:
     - meta_content_scope: meta.group.nif
-    - match: '(~)?(\d+),(~)?(\d+)'
+    - match: '(~)?(\d+)(,)(~)?(\d+)'
       captures:
         1: keyword.operator.nif
         2: constant.numeric.nif
-        3: keyword.operator.nif
-        4: constant.numeric.nif
-        5: keyword.operator.nif
-        6: constant.numeric.nif
+        3: punctuation.separator.comma.nif
+        4: keyword.operator.nif
+        5: constant.numeric.nif
+        6: keyword.operator.nif
+        7: constant.numeric.nif
       push: [node|0, comment|0|entry-0, filename|0]
-    - match: ',?(~)?(\d+)'
+    - match: '(,)?(~)?(\d+)'
       captures:
-        1: keyword.operator.nif
-        2: constant.numeric.nif
+        1: punctuation.separator.comma.nif
+        2: keyword.operator.nif
+        3: constant.numeric.nif
       push: [node|0, comment|0]
     - match: '#'
       scope: comment.line.number-sign.nif punctuation.definition.comment.begin.nif
       push: [node|0, comment|1]
     - match: '\.'
-      scope: keyword.other.nif
-    - match: '(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:\.?(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d))*'
-    - match: ':(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:\.?(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d))*'
+      scope: constant.language.nif
+    - match: '(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d|\.)*'
+    - match: ':(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d|\.)*'
       scope: entity.name.variable.nif
     - match: '[+-]\d+(?:(?:(?:\.\d+)?(E-?\d+)?)|u)?'
       scope: meta.number.nif constant.numeric.nif
@@ -94,31 +96,33 @@ contexts:
   # Rule: filename
   filename|1:
     - match: '\\[0-9A-F][0-9A-F]'
-    - match: '(?=[\x00-\x1F\(\)\[\]\{\}~#''"\\:&&[^\s]])'
+    - match: '(?=[\x00-\x1F\(\)\[\]\{\}~#''"\\:&&[^\s]]|\s)'
       pop: true
   # Rule: main
   main:
-    - match: '(~)?(\d+),(~)?(\d+)'
+    - match: '(~)?(\d+)(,)(~)?(\d+)'
       captures:
         1: keyword.operator.nif
         2: constant.numeric.nif
-        3: keyword.operator.nif
-        4: constant.numeric.nif
-        5: keyword.operator.nif
-        6: constant.numeric.nif
+        3: punctuation.separator.comma.nif
+        4: keyword.operator.nif
+        5: constant.numeric.nif
+        6: keyword.operator.nif
+        7: constant.numeric.nif
       push: [node|0, comment|0|entry-0, filename|0]
-    - match: ',?(~)?(\d+)'
+    - match: '(,)?(~)?(\d+)'
       captures:
-        1: keyword.operator.nif
-        2: constant.numeric.nif
+        1: punctuation.separator.comma.nif
+        2: keyword.operator.nif
+        3: constant.numeric.nif
       push: [node|0, comment|0]
     - match: '#'
       scope: comment.line.number-sign.nif punctuation.definition.comment.begin.nif
       push: [node|0, comment|1]
     - match: '\.'
-      scope: keyword.other.nif
-    - match: '(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:\.?(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d))*'
-    - match: ':(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:\.?(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d))*'
+      scope: constant.language.nif
+    - match: '(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d|\.)*'
+    - match: ':(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d|\.)*'
       scope: entity.name.variable.nif
     - match: '[+-]\d+(?:(?:(?:\.\d+)?(E-?\d+)?)|u)?'
       scope: meta.number.nif constant.numeric.nif
@@ -137,11 +141,11 @@ contexts:
   # Rule: node
   node|0:
     - match: '\.'
-      scope: keyword.other.nif
+      scope: constant.language.nif
       pop: true
-    - match: '(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:\.?(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d))*'
+    - match: '(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d|\.)*'
       pop: true
-    - match: ':(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:\.?(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d))*'
+    - match: ':(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])(?:(?:[_A-Za-z\x80-\xFF]|\\[0-9A-F][0-9A-F])|\d|\.)*'
       scope: entity.name.variable.nif
       pop: true
     - match: '[+-]\d+(?:(?:(?:\.\d+)?(E-?\d+)?)|u)?'
